@@ -1,0 +1,171 @@
+// ===== CONFIG : numéro WhatsApp de l'entreprise =====
+var BUSINESS_WHATSAPP_NUMBER = "2250700000000";
+
+// ===== Exemple de données du panier =====
+var cartItems = [];
+
+// ===== Utilitaire formatage prix =====
+function formatPrice(value) {
+  return value.toLocaleString("fr-FR") + " FCFA";
+}
+
+// ===== Sélection éléments DOM =====
+var panierItemsEl = document.getElementById("panier-items");
+var panierCountEl = document.getElementById("panier-count");
+var panierVideEl = document.getElementById("panier-vide");
+var resumeSousTotalEl = document.getElementById("resume-sous-total");
+var btnCommander = document.getElementById("btn-commander");
+
+// ===== Rendu du panier =====
+function renderCart() {
+  panierItemsEl.innerHTML = "";
+
+  if (cartItems.length === 0) {
+    panierCountEl.textContent = "(0)";
+    panierVideEl.classList.remove("hidden");
+    resumeSousTotalEl.textContent = "0 FCFA";
+    btnCommander.textContent = "Commander (0 FCFA)";
+    btnCommander.disabled = true;
+    return;
+  }
+
+  panierVideEl.classList.add("hidden");
+  panierCountEl.textContent = "(" + cartItems.length + ")";
+
+  var subtotal = 0;
+
+  cartItems.forEach(function (item) {
+    var lineTotal = item.price * item.quantity;
+    subtotal += lineTotal;
+
+    var itemEl = document.createElement("div");
+    itemEl.className = "panier-item";
+
+    itemEl.innerHTML =
+      '<div class="panier-item-left">' +
+        '<div class="panier-img">' +
+          '<img src="' + item.imageUrl + '" alt="' + item.title + '">' +
+        '</div>' +
+        '<div class="panier-info">' +
+          '<div class="panier-info-title">' + item.title + '</div>' +
+          '<div class="panier-info-subtitle">' + item.subtitle + '</div>' +
+          '<button class="panier-delete" data-id="' + item.id + '">' +
+            '<span class="panier-delete-icon">🗑</span>' +
+            '<span>Supprimer</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="panier-price-block">' +
+        '<div class="panier-price-current">' + formatPrice(item.price) + '</div>' +
+        '<div>' +
+          '<span class="panier-price-old">' + formatPrice(item.oldPrice) + '</span>' +
+          '<span class="panier-price-discount">' + item.discount + '</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="panier-qty-block">' +
+        '<div class="qty-controls" data-id="' + item.id + '">' +
+          '<button class="qty-btn minus">−</button>' +
+          '<div class="qty-value">' + item.quantity + '</div>' +
+          '<button class="qty-btn plus">+</button>' +
+        '</div>' +
+        '<div class="line-total">' + formatPrice(lineTotal) + '</div>' +
+      '</div>';
+
+    panierItemsEl.appendChild(itemEl);
+  });
+
+  resumeSousTotalEl.textContent = formatPrice(subtotal);
+  btnCommander.textContent = "Commander (" + formatPrice(subtotal) + ")";
+  btnCommander.disabled = false;
+
+  attachEvents();
+}
+
+// ===== Événements (supprimer / + / −) =====
+function attachEvents() {
+  // Supprimer produit
+  var deleteButtons = document.querySelectorAll(".panier-delete");
+  deleteButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var id = parseInt(btn.getAttribute("data-id"), 10);
+      cartItems = cartItems.filter(function (item) {
+        return item.id !== id;
+      });
+      renderCart();
+    });
+  });
+
+  // Gestion quantités
+  var qtyBoxes = document.querySelectorAll(".qty-controls");
+  qtyBoxes.forEach(function (box) {
+    var id = parseInt(box.getAttribute("data-id"), 10);
+    var minusBtn = box.querySelector(".qty-btn.minus");
+    var plusBtn = box.querySelector(".qty-btn.plus");
+
+    minusBtn.addEventListener("click", function () {
+      var item = cartItems.find(function (p) {
+        return p.id === id;
+      });
+      if (!item) return;
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+        renderCart();
+      }
+    });
+
+    plusBtn.addEventListener("click", function () {
+      var item = cartItems.find(function (p) {
+        return p.id === id;
+      });
+      if (!item) return;
+      item.quantity += 1;
+      renderCart();
+    });
+  });
+}
+
+// ===== Commander via WhatsApp =====
+btnCommander.addEventListener("click", function () {
+  if (cartItems.length === 0) return;
+
+  var nom = prompt("Entrez votre nom complet :");
+  if (!nom) return;
+
+  var telephone = prompt("Entrez votre numéro de téléphone :");
+  if (!telephone) return;
+
+  var localisation = prompt("Entrez votre localisation (ville / quartier) :");
+  if (!localisation) return;
+
+  var paiement = prompt("Mode de paiement (Wave / Orange Money / MTN Money / Paiement à la livraison) :");
+  if (!paiement) return;
+
+  var message = "Nouvelle commande depuis le site:\n\n";
+
+  cartItems.forEach(function (item) {
+    message += "- " + item.title + " x " + item.quantity +
+               " : " + formatPrice(item.price * item.quantity) + "\n";
+  });
+
+  var total = cartItems.reduce(function (sum, item) {
+    return sum + (item.price * item.quantity);
+  }, 0);
+
+  message += "\nTotal : " + formatPrice(total) + "\n\n";
+  message += "Nom : " + nom + "\n";
+  message += "Téléphone : " + telephone + "\n";
+  message += "Localisation : " + localisation + "\n";
+  message += "Mode de paiement : " + paiement;
+
+  var encoded = encodeURIComponent(message);
+  var url = "https://wa.me/" + BUSINESS_WHATSAPP_NUMBER + "?text=" + encoded;
+
+  window.open(url, "_blank");
+});
+
+// ===== Initialisation =====
+document.addEventListener("DOMContentLoaded", function () {
+  renderCart();
+});

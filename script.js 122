@@ -1,0 +1,249 @@
+// =======================
+// DONNÉES PRODUITS
+// =======================
+const PRODUCTS = [];
+
+// =======================
+// OUTILS
+// =======================
+function formatPrice(value, currency) {
+  return value.toLocaleString("fr-FR") + " " + (currency || "FCFA");
+}
+
+// =======================
+// RENDU DES PRODUITS
+// =======================
+function renderProducts(list) {
+  const grid = document.getElementById("products-grid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  if (!list || list.length === 0) {
+    grid.innerHTML = "<p>Aucun produit trouvé pour cette recherche.</p>";
+    return;
+  }
+
+  list.forEach((item) => {
+    const card = document.createElement("article");
+    card.className = "product-card";
+
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${item.imageUrl}" alt="${item.title}">
+        ${item.isTop ? '<span class="product-badge">TOP</span>' : ""}
+      </div>
+      <div class="product-body">
+        <h3 class="product-title">${item.title}</h3>
+        <p class="product-price">${formatPrice(item.price, item.currency)}</p>
+        <p class="product-location">${item.city}, ${item.country}</p>
+        <p class="product-description">${item.description}</p>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// =======================
+// FILTRES + RECHERCHE
+// =======================
+function applyFilters() {
+  const searchInput = document.getElementById("search-input");
+  const categoryFilter = document.getElementById("category-filter");
+  const cityFilter = document.getElementById("city-filter");
+  const sortSelect = document.getElementById("sort-select");
+  const proOnly = document.getElementById("pro-only");
+  const topOnly = document.getElementById("top-only");
+  const priceMin = document.getElementById("price-min");
+  const priceMax = document.getElementById("price-max");
+
+  let result = [...PRODUCTS];
+
+  // Texte de recherche
+  const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
+  if (searchText) {
+    result = result.filter((p) => {
+      return (
+        p.title.toLowerCase().includes(searchText) ||
+        p.category.toLowerCase().includes(searchText) ||
+        p.description.toLowerCase().includes(searchText)
+      );
+    });
+  }
+
+  // Catégorie
+  const category = categoryFilter ? categoryFilter.value : "";
+  if (category) {
+    result = result.filter((p) => p.category === category);
+  }
+
+  // Ville
+  const city = cityFilter ? cityFilter.value : "";
+  if (city) {
+    result = result.filter((p) => p.city === city);
+  }
+
+  // Prix min / max
+  const minValue = priceMin && priceMin.value ? parseInt(priceMin.value, 10) : null;
+  const maxValue = priceMax && priceMax.value ? parseInt(priceMax.value, 10) : null;
+
+  if (minValue !== null && !isNaN(minValue)) {
+    result = result.filter((p) => p.price >= minValue);
+  }
+  if (maxValue !== null && !isNaN(maxValue)) {
+    result = result.filter((p) => p.price <= maxValue);
+  }
+
+  // Professionnel seulement
+  if (proOnly && proOnly.checked) {
+    result = result.filter((p) => p.isProfessional);
+  }
+
+  // Top annonces seulement
+  if (topOnly && topOnly.checked) {
+    result = result.filter((p) => p.isTop);
+  }
+
+  // Tri
+  if (sortSelect) {
+    const sortValue = sortSelect.value;
+    if (sortValue === "recent") {
+      result.sort((a, b) => a.createdMinutesAgo - b.createdMinutesAgo); // les plus récents d'abord
+    } else if (sortValue === "price-asc") {
+      result.sort((a, b) => a.price - b.price);
+    } else if (sortValue === "price-desc") {
+      result.sort((a, b) => b.price - a.price);
+    }
+  }
+
+  renderProducts(result);
+}
+
+// =======================
+// INIT FILTRES (catégories, villes)
+// =======================
+function initFilters() {
+  const categoryFilter = document.getElementById("category-filter");
+  const cityFilter = document.getElementById("city-filter");
+
+  if (categoryFilter) {
+    const categories = Array.from(new Set(PRODUCTS.map((p) => p.category)));
+    categories.forEach((cat) => {
+      const opt = document.createElement("option");
+      opt.value = cat;
+      opt.textContent = cat;
+      categoryFilter.appendChild(opt);
+    });
+  }
+
+  if (cityFilter) {
+    const cities = Array.from(new Set(PRODUCTS.map((p) => p.city)));
+    cities.forEach((city) => {
+      const opt = document.createElement("option");
+      opt.value = city;
+      opt.textContent = city;
+      cityFilter.appendChild(opt);
+    });
+  }
+}
+
+// =======================
+// NAVIGATION ENTRE SECTIONS
+// =======================
+function initNavigation() {
+  const navLinks = document.querySelectorAll(".nav-link");
+  const sections = document.querySelectorAll(".section");
+  const goToListingsBtn = document.getElementById("go-to-listings");
+
+  function showSection(id) {
+    sections.forEach((sec) => {
+      sec.classList.toggle("visible", sec.id === id);
+    });
+    navLinks.forEach((link) => {
+      const secId = link.getAttribute("data-section");
+      link.classList.toggle("active", secId === id);
+    });
+  }
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      const section = link.getAttribute("data-section");
+      if (!section) return;
+
+      // Cas spécial : panier -> page panier.html
+      if (section === "cart") {
+        e.preventDefault();
+        window.location.href = "panier.html";
+        return;
+      }
+
+      e.preventDefault();
+      showSection(section);
+    });
+  });
+
+  if (goToListingsBtn) {
+    goToListingsBtn.addEventListener("click", function () {
+      showSection("listings");
+    });
+  }
+}
+
+// =======================
+// RECHERCHE (barre + bouton)
+// =======================
+function initSearchBar() {
+  const searchInput = document.getElementById("search-input");
+  const searchButton = document.getElementById("search-button");
+  const categoryFilter = document.getElementById("category-filter");
+  const cityFilter = document.getElementById("city-filter");
+  const sortSelect = document.getElementById("sort-select");
+  const proOnly = document.getElementById("pro-only");
+  const topOnly = document.getElementById("top-only");
+  const priceMin = document.getElementById("price-min");
+  const priceMax = document.getElementById("price-max");
+  const resetFilters = document.getElementById("reset-filters");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", applyFilters);
+  }
+
+  if (searchButton) {
+    searchButton.addEventListener("click", function () {
+      applyFilters();
+    });
+  }
+
+  if (categoryFilter) categoryFilter.addEventListener("change", applyFilters);
+  if (cityFilter) cityFilter.addEventListener("change", applyFilters);
+  if (sortSelect) sortSelect.addEventListener("change", applyFilters);
+  if (proOnly) proOnly.addEventListener("change", applyFilters);
+  if (topOnly) topOnly.addEventListener("change", applyFilters);
+  if (priceMin) priceMin.addEventListener("input", applyFilters);
+  if (priceMax) priceMax.addEventListener("input", applyFilters);
+
+  if (resetFilters) {
+    resetFilters.addEventListener("click", function () {
+      if (searchInput) searchInput.value = "";
+      if (categoryFilter) categoryFilter.value = "";
+      if (cityFilter) cityFilter.value = "";
+      if (sortSelect) sortSelect.value = "recent";
+      if (proOnly) proOnly.checked = false;
+      if (topOnly) topOnly.checked = false;
+      if (priceMin) priceMin.value = "";
+      if (priceMax) priceMax.value = "";
+      applyFilters();
+    });
+  }
+}
+
+// =======================
+// INITIALISATION GLOBALE
+// =======================
+document.addEventListener("DOMContentLoaded", function () {
+  initNavigation();
+  initFilters();
+  initSearchBar();
+  renderProducts(PRODUCTS);     // affichage initial
+});

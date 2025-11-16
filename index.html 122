@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>MarketPlace – Accueil</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- HEADER / MENU -->
+  <header class="header">
+    <div class="logo">votre future boutique</div>
+
+    <!-- 🔍 BARRE DE RECHERCHE AU MILIEU -->
+    <div class="header-search">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Cherchez un produit, une marque ou une catégorie"
+        />
+      </div>
+      <button id="search-button" class="btn-primary search-button">
+        Rechercher
+      </button>
+    </div>
+
+    <!-- MENU -->
+    <nav class="nav">
+      <a href="#" data-section="home" class="nav-link active">Accueil</a>
+      <a href="panier.html" data-section="cart" class="nav-link">
+        Panier <span id="cart-count" class="cart-count">0</span>
+      </a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ACCUEIL -->
+    <section id="home" class="section visible">
+      <div class="hero">
+        <h1>Trouvez les meilleures offres en Côte d’Ivoire</h1>
+        <p>
+          Annonces de produits (mode, électronique, maison, immobilier, etc.)
+          publiées par une entreprise. Commande simple via WhatsApp.
+        </p>
+      </div>
+
+      <!-- TITRE + BANDEAU D’ARTICLES + FILTRE CATÉGORIE -->
+      <div class="page-header">
+        <h2>Dernières annonces</h2>
+
+        <div class="search-filter">
+          <!-- BANDEAU D'ARTICLES QUI TOURNENT -->
+          <div class="featured-strip">
+            <div class="featured-track">
+              <div class="featured-item">
+                <img src="https://via.placeholder.com/120x80?text=iPhone" alt="iPhone" />
+                <div>
+                  <p class="featured-title">iPhone 13 Pro</p>
+                  <p class="featured-price">420 000 FCFA</p>
+                </div>
+              </div>
+
+              <div class="featured-item">
+                <img src="https://via.placeholder.com/120x80?text=Chaussures" alt="Chaussures" />
+                <div>
+                  <p class="featured-title">Chaussures Nike</p>
+                  <p class="featured-price">25 000 FCFA</p>
+                </div>
+              </div>
+
+              <div class="featured-item">
+                <img src="https://via.placeholder.com/120x80?text=Robe" alt="Robe" />
+                <div>
+                  <p class="featured-title">Robe longue fleurie</p>
+                  <p class="featured-price">18 000 FCFA</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtre catégorie (on le laisse ici) -->
+          <select id="category-filter">
+            <option value="">Toutes les catégories</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- FILTRES + GRILLE PRODUITS -->
+      <div class="layout">
+        <!-- FILTRES LATERAUX -->
+        <aside class="sidebar">
+          <h3>Trier</h3>
+          <select id="sort-select">
+            <option value="recent">Plus récent</option>
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+          </select>
+
+          <h3>Prix</h3>
+          <div class="price-range">
+            <input type="number" id="price-min" placeholder="Min" />
+            <input type="number" id="price-max" placeholder="Max" />
+          </div>
+
+          <h3>Ville</h3>
+          <select id="city-filter">
+            <option value="">Toutes les villes</option>
+          </select>
+
+          <label class="checkbox">
+            <input type="checkbox" id="pro-only" />
+            Professionnel seulement
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" id="top-only" />
+            Top annonces
+          </label>
+
+          <button id="reset-filters" class="btn-secondary small">
+            Réinitialiser
+          </button>
+        </aside>
+
+        <!-- GRILLE DES PRODUITS -->
+        <div id="products-grid" class="products-grid">
+          <!-- Cartes produits injectées en JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- (Section contact ici seulement si tu veux, sinon tu utilises contact.html) -->
+    <section id="contact" class="section">
+      <h2>Contact</h2>
+      <p>
+        Pour toute question, contactez directement l’entreprise par WhatsApp ou email.
+      </p>
+      <p><strong>WhatsApp :</strong> +225 07 00 00 00 00 (à modifier dans le code)</p>
+      <p><strong>Email :</strong> contact@entreprise.ci</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

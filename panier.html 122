@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Panier</title>
+    <link rel="stylesheet" href="panier.css" />
+</head>
+<body>
+
+    <!-- 🔙 BOUTON RETOUR -->
+    <a href="index.html" class="back-btn">
+        ← Retour
+    </a>
+
+    <div class="page-wrapper">
+        <main class="panier-container">
+            <!-- Bloc panier -->
+            <section class="panier-box">
+                <h1 class="panier-title">
+                    Panier <span id="panier-count">(0)</span>
+                </h1>
+                <div id="panier-items"></div>
+                <p id="panier-vide" class="panier-empty hidden">
+                    Votre panier est vide pour le moment.
+                </p>
+            </section>
+
+            <!-- Résumé -->
+            <aside class="resume-box">
+                <h2 class="resume-title">RÉSUMÉ DU PANIER</h2>
+                <div class="resume-row">
+                    <span>Sous-total</span>
+                    <span id="resume-sous-total">0 FCFA</span>
+                </div>
+
+                <button id="btn-commander" class="btn-commander" disabled>
+                    Commander (0 FCFA)
+                </button>
+            </aside>
+        </main>
+    </div>
+
+    <script src="panier.js"></script>
+</body>
+</html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panier - Ma boutique</title>
+    <link rel="stylesheet" href="panier.css">
+</head>
+<body>
+
+    <!-- Bouton retour vers le menu -->
+    <a href="index.html" class="btn-retour">← Retour</a>
+
+    <div class="container">
+        <h1>Mon panier</h1>
+
+        <!-- EXEMPLE D'ARTICLES (à adapter à ton site) -->
+        <div id="cart">
+            <div class="cart-item" data-name="T-shirt oversize" data-price="8000" data-qty="2">
+                <span class="item-name">T-shirt oversize</span>
+                <span class="item-qty">Qté : 2</span>
+                <span class="item-price">8 000 FCFA</span>
+            </div>
+
+            <div class="cart-item" data-name="Basket Nike" data-price="25000" data-qty="1">
+                <span class="item-name">Basket Nike</span>
+                <span class="item-qty">Qté : 1</span>
+                <span class="item-price">25 000 FCFA</span>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <span id="total-amount">Total : 0 FCFA</span>
+            <button id="btnCheckout">Passer la commande</button>
+        </div>
+    </div>
+
+    <!-- MODAL FORMULAIRE COMMANDE -->
+    <div id="orderModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Confirmer la commande</h2>
+
+            <form id="orderForm">
+                <label for="name">Nom complet</label>
+                <input type="text" id="name" placeholder="Entrez votre nom">
+
+                <label for="phone">Numéro de téléphone</label>
+                <input type="tel" id="phone" placeholder="Ex : 0102030405">
+
+                <label for="address">Lieu d'habitation / Livraison</label>
+                <input type="text" id="address" placeholder="Commune, quartier, repère">
+
+                <label for="payment">Mode de paiement</label>
+                <select id="payment">
+                    <option value="">-- Choisir --</option>
+                    <option value="WAVE">WAVE</option>
+                    <option value="MTN MoMo">MTN Monnaie</option>
+                    <option value="Orange Money">Orange Money</option>
+                    <option value="Paiement à la livraison">Paiement à la livraison</option>
+                </select>
+
+                <label for="delivery">Mode de livraison</label>
+                <select id="delivery">
+                    <option value="">-- Choisir --</option>
+                    <option value="Livraison à domicile">Livraison à domicile</option>
+                    <option value="Récupération en boutique">Récupération en boutique</option>
+                    <option value="À discuter avec le vendeur">À discuter avec le vendeur</option>
+                </select>
+
+                <button type="submit" class="btn-send">Envoyer la commande</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="panier.js"></script>
+</body>
+</html>
